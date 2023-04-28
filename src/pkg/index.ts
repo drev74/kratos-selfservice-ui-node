@@ -19,8 +19,7 @@ export const getUrlForFlow = (
   flow: string,
   query?: URLSearchParams,
 ) =>
-  `${removeTrailingSlash(base)}/self-service/${flow}/browser${
-    query ? `?${query.toString()}` : ""
+  `${removeTrailingSlash(base)}/self-service/${flow}/browser${query ? `?${query.toString()}` : ""
   }`
 
 export const defaultConfig: RouteOptionsCreator = () => {
@@ -38,23 +37,23 @@ export const isQuerySet = (x: any): x is string =>
 // or 403 error code.
 export const redirectOnSoftError =
   (res: Response, next: NextFunction, redirectTo: string) =>
-  (err: AxiosError) => {
-    if (!err.response) {
+    (err: AxiosError) => {
+      if (!err.response) {
+        next(err)
+        return
+      }
+
+      if (
+        err.response.status === 404 ||
+        err.response.status === 410 ||
+        err.response.status === 403
+      ) {
+        res.redirect(`${redirectTo}`)
+        return
+      }
+
       next(err)
-      return
     }
-
-    if (
-      err.response.status === 404 ||
-      err.response.status === 410 ||
-      err.response.status === 403
-    ) {
-      res.redirect(`${redirectTo}`)
-      return
-    }
-
-    next(err)
-  }
 
 export const handlebarsHelpers = {
   jsonPretty: (context: any) => JSON.stringify(context, null, 2),
@@ -98,11 +97,4 @@ export const handlebarsHelpers = {
       children: text,
     })
   },
-  oryBranding: () =>
-    Typography({
-      children: `Protected by `,
-      type: "regular",
-      size: "tiny",
-      color: "foregroundSubtle",
-    }),
 }
